@@ -1,41 +1,71 @@
-import React, { useState } from "react";
-import Transaction from "./Transaction";
+import { useState } from "react"
 
-function AddTransactionForm() {
-  const [date, setDate] = useState("")
-  const [description, setDescription] = useState("")
-  const [category, setCategory] = useState("")
-  const [amount, setAmount] = useState("")
-  function handleSubmit(e) {
-    fetch("http://localhost:8001/transactions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        date: date,
-        description: description,
-        category: category,
-        amount: amount,
-      }),
-    });
-     alert("added successfully")
+export default function AddTransactionForm({onAdd}){
+
+  const [newTransaction, setNewTransaction] = useState({
+      description: '',
+      amount: '',
+      date: '',
+      category: ''
+  });
+  const handleInputChange = (event) => {
+       const {name, value} = event.target;
+       //object property shorthand syntax :  [name]: value
+       // dynamically sets a property on the object 
+       setNewTransaction({...newTransaction, [name]: value})
   }
-  return (
-    <div className="ui segment">
-      <form onSubmit={handleSubmit} className="ui form">
-        <div className="inline fields">
-          <input value={date} onChange={(e) => setDate(e.target.value)} type="date" name="date" />
-          <input value={description} onChange={(e) => setDescription(e.target.value)} type="text" name="description" placeholder="Description" />
-          <input value={category} onChange={(e) => setCategory(e.target.value)} type="text" name="category" placeholder="Category" />
-          <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" name="amount" placeholder="Amount" step="0.01" />
-        </div>
-        <button className="ui button" type="submit">
-          Add Transaction
-        </button>
-      </form>
-    </div>
-  );
-}
 
-export default AddTransactionForm;
+  const handleSubmit = (event) => {
+       event.preventDefault();
+       onAdd(newTransaction);
+       // resetting the input box
+       setNewTransaction({description: '' , amount: '' , date: '' , category: ''})
+  }
+     return (
+        <>
+          <div className="container">
+            <h2>Add Transaction</h2>
+            <form className="form-control" onSubmit={handleSubmit}>
+                <label htmlFor="description">Description</label>
+                <input
+                type="text"
+                className="form-control"
+                id="description"
+                name="description"
+                value={newTransaction.description}
+                onChange={handleInputChange}                
+                />
+                <label htmlFor="amount">Amount</label>
+                <input
+                type="number"
+                id="amount"
+                className="form-control"
+                name="amount"
+                value={newTransaction.amount}
+                onChange={handleInputChange}                
+                />
+                <label htmlFor="date">Date</label>
+                <input
+                type="date"
+                className="form-control"
+                id="date"
+                name="date"
+                value={newTransaction.date}
+                onChange={handleInputChange}                
+                />
+               <label htmlFor="category">Category</label>
+                <input
+                type="text"
+                className="form-control"
+                id="category"
+                name="category"
+                value={newTransaction.category}
+                onChange={handleInputChange}                
+                />
+                <br></br>
+                <button type="submit" className="btn btn-success">Add new transaction</button>
+            </form>
+          </div>
+        </>
+     )
+}
